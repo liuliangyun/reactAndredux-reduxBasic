@@ -1,58 +1,67 @@
-import React, {Component} from 'react';
-import store from '../Store';
-import reducer from '../Reducer';
-import * as Actions from './Actions.js';
+import React, { Component } from 'react';
 
-class Counter extends Component{
-    constructor(props) {
-        super(props);
-        this.onClickIncrementButton = this.onClickIncrementButton.bind(this);
-        this.onClickDecrementButton = this.onClickDecrementButton.bind(this);
-        this.onChange = this.onChange.bind(this);
+import store from '../Store.js';
+import * as Actions from '../Actions.js';
 
-        this.state = this.getOwnState();
-    }
+const buttonStyle = {
+  margin: '10px'
+};
 
-    onChange(){
-        this.setState(this.getOwnState());
-    }
+class Counter extends Component {
+  constructor(props) {
+    super(props);
 
-    getOwnState(){
-        return { value: store.getState()[this.props.caption] };
-    }
+    this.onIncrement = this.onIncrement.bind(this);
+    this.onDecrement = this.onDecrement.bind(this);
+    this.onChange = this.onChange.bind(this);
+    this.getOwnState = this.getOwnState.bind(this);
 
-    onClickIncrementButton(){
-        store.dispatch(Actions.increment(this.props.caption));
-    }
+    this.state = this.getOwnState();
+  }
 
-    onClickDecrementButton(){
-        store.dispatch(Actions.decrement(this.props.caption));
-    }
+  getOwnState() {
+    return {
+      value: store.getState()[this.props.caption]
+    };
+  }
 
-    //装载过程的函数
-    componentDidMount(){
-        store.subscribe(this.onChange);
-    }
+  onIncrement() {
+    store.dispatch(Actions.increment(this.props.caption));
+  }
 
-    //更新过程的函数
-    shouldComponentUpdate(nextProps, nextState){
-        return (nextProps.caption !== this.props.caption) || (nextState.sum !== this.state.sum);
-    }
+  onDecrement() {
+    store.dispatch(Actions.decrement(this.props.caption));
+  }
 
-    //卸载过程的函数
-    componentWillUnmount(){
-        store.unsubscribe(this.onChange);
-    }
+  onChange() {
+    this.setState(this.getOwnState());
+  }
 
-    render(){
-        return (
-            <div>
-                <button onClick = {this.onClickIncrementButton}>+</button>
-                <button onClick = {this.onClickDecrementButton}>-</button>
-                <span>{this.props.caption} Count: {this.state.count}</span>
-            </div>
-        );
-    }
+  shouldComponentUpdate(nextProps, nextState) {
+    return (nextProps.caption !== this.props.caption) ||
+      (nextState.value !== this.state.value);
+  }
+
+  componentDidMount() {
+    store.subscribe(this.onChange);
+  }
+
+  componentWillUnmount() {
+    store.unsubscribe(this.onChange);
+  }
+
+  render() {
+    //const value = this.state.value;
+    //const {caption} = this.props;
+
+    return (
+      <div>
+        <button style={buttonStyle} onClick={this.onIncrement}>+</button>
+        <button style={buttonStyle} onClick={this.onDecrement}>-</button>
+        <span>{this.props.caption} count: {this.state.value}</span>
+      </div>
+    );
+  }
 }
 
 export default Counter;

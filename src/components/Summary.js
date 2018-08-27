@@ -1,49 +1,50 @@
-import React, {Component} from 'react';
-import store from '../Store';
+import React, { Component } from 'react';
 
-class Summary extends Component{
-    constructor(props){
-        super(props);
-        this.onChange = this.onChange.bind(this);
+import store from '../Store.js';
 
-        this.state = this.getOwnState();
+class Summary extends Component {
+  constructor(props) {
+    super(props);
+
+    this.onChange = this.onChange.bind(this);
+
+    this.state = this.getOwnState();
+  }
+
+  onChange() {
+    this.setState(this.getOwnState());
+  }
+
+  getOwnState() {
+    const state = store.getState();
+    let sum = 0;
+    for (const key in state) {
+      if (state.hasOwnProperty(key)) {
+        sum += state[key];
+      }
     }
 
-    onChange(){
-        this.setState(this.getOwnState());
-    }
+    return { sum: sum };
+  }
 
-    getOwnState(){
-        const state = store.getState();
-        let sum = 0;
-        for (const key in state) {
-            if (state.hasOwnProperty(key)) {
-                sum += state[key];
-            }
-        }
-        return { sum: sum };
-    }
+  shouldComponentUpdate(nextProps, nextState) {
+    return nextState.sum !== this.state.sum;
+  }
 
-    //装载过程的函数
-    componentDidMount(){
-        store.subscribe(this.onChange);
-    }
+  componentDidMount() {
+    store.subscribe(this.onChange);
+  }
 
-    //更新过程的函数
-    shouldComponentUpdate(nextProps, nextState){
-        return nextState.sum !== this.state.sum;
-    }
+  componentWillUnmount() {
+    store.unsubscribe(this.onChange);
+  }
 
-    //卸载过程的函数
-    componentWillUnmount(){
-        store.unsubscribe(this.onChange);
-    }
-
-    render(){
-        return (
-            <div>Total Count:  {this.state.sum}</div>
-        );
-    }
+  render() {
+    const sum = this.state.sum;
+    return (
+      <div>Total Count: {sum}</div>
+    );
+  }
 }
 
 export default Summary;
